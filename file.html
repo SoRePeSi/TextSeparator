@@ -1,0 +1,94 @@
+<html>
+	<head></head>
+	<body>
+		<textarea> IMMA TEXTAREA </textarea>
+		<button> IMMA BUTTON </button>
+		<p> IMMA PARAGRAPH </p>
+		<span><button id="goback">&lt-</button> <button id="copy"> COPY </button> <button id="goforth">-&gt</button></span>
+		<script>
+			var currentpar = 0;
+			var inputtext;
+			var inputsplit;
+			var towrite = [];
+
+			function doit(){
+				inputtext = document.querySelector("textarea").value;
+				inputsplit = inputtext.split('\n');
+				
+				var intext = [], cont = 0, outp = "";
+				for(var i=0; i<inputsplit.length; i++){
+				    if(inputsplit[i].length == 0){
+				       inputsplit.splice(i, 1);
+				       
+				       i--;
+				       continue;
+				    }
+				    
+				    
+				    if(cont == 0 && inputsplit[i].length > 5000){
+				        towrite[towrite.length] = inputsplit[i];
+				        cont = 0;
+
+				        continue;
+				    }
+				    
+				    if(cont + inputsplit[i].length > 5000){
+				        towrite[towrite.length] = outp;
+				        outp = "";
+				        cont = 0;
+	
+				        i--;
+				        continue;
+				    }
+				    
+				    if(i + 1 == inputsplit.length){
+				        outp += inputsplit[i];
+				        towrite[towrite.length] = outp;
+				        outp = "";
+				        cont = 0;
+	
+				        break;
+				    }
+				    
+				    outp += inputsplit[i];
+				    if(outp.length > 0) { outp += "<br/>"; }
+				    cont += inputsplit[i].length;
+				}
+
+				currentpar = 0;
+				document.getElementById("goback").addEventListener("click", minpar);
+				document.getElementById("goforth").addEventListener("click", plupar);
+				
+				updateta();
+			}
+
+			function minpar(){
+				if(currentpar > 0){ currentpar--; }
+				updateta();
+			}
+
+			function plupar(){
+				if(currentpar < towrite.length - 1) { currentpar++; }
+				updateta();
+			}
+
+			function updateta(){
+				document.querySelector("p").innerHTML = towrite[currentpar];
+			}
+
+			function copytext(){
+				var copytext = document.querySelector("p").innerHTML;
+				while(copytext.includes("<br>")){
+				    copytext = copytext.replace("<br>", "\n");
+				}
+				
+				if(!copytext.includes("<br>")){
+    				navigator.clipboard.writeText(copytext);
+    				alert("Copied the text: " + copytext);
+				}
+			}
+			document.querySelector("button").addEventListener("click", doit);
+			document.getElementById("copy").addEventListener("click", copytext);
+		</script>
+	</body>
+</html>
